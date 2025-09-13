@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Description Exercise</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 95vw;
+            width: 95%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .exercise {
+            margin: 30px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 30px;
+            border: 3px solid #e1e8ff;
+        }
+
+        .exercise-title {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .instruction {
+            background: #e8f4fd;
+            border: 2px solid #4facfe;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #2c5282;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            border: 2px dashed #ddd;
+        }
+
+        .word-tag {
+            background: linear-gradient(45deg, #ff8c42, #ff6b35);
+            color: white;
+            padding: 18px 32px;
+            border-radius: 30px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 140, 66, 0.4);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            min-width: 150px;
+            text-align: center;
+            border: none;
+            outline: none;
+        }
+
+        .word-tag:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(255, 140, 66, 0.5);
+        }
+
+        .word-tag:active {
+            transform: scale(0.95);
+        }
+
+        .word-tag.selected {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(79, 172, 254, 0.6);
+            animation: pulse 1s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateY(-4px) scale(1.05); }
+            50% { transform: translateY(-4px) scale(1.1); }
+        }
+
+        .word-tag.used {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .images-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+            padding: 0 10px;
+        }
+
+        .image-item {
+            background: white;
+            border-radius: 15px;
+            overflow: visible;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            margin: 20px 10px;
+        }
+
+        .image-item:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+
+        .image-item.clickable {
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .image-item.clickable:hover {
+            border-color: #4facfe;
+        }
+
+        .image-item.selected-target {
+            border: 3px solid #4facfe;
+            background: #e8f4fd;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3); }
+            to { box-shadow: 0 8px 35px rgba(79, 172, 254, 0.6); }
+        }
+
+        .image-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 320px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #ff6b6b;
+            margin: 10px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding: 5px;
+        }
+
+        .image-item:hover .image-wrapper img {
+            transform: scale(1.15);
+        }
+
+        .image-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #ff6b6b;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            border: 4px solid white;
+            z-index: 100;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .placeholder-image {
+            color: #999;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .answer-zone {
+            min-height: 80px;
+            border: 2px dashed #ddd;
+            border-radius: 30px;
+            margin: 10px;
+            padding: 18px 32px;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #999;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .answer-zone.has-content {
+            background: linear-gradient(45deg, #ff8c42, #ff6b35);
+            color: white;
+            border: none;
+            font-weight: 600;
+            font-size: 18px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 20px rgba(255, 140, 66, 0.4);
+        }
+
+        .answer-zone.correct {
+            background: linear-gradient(45deg, #4caf50, #8bc34a) !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .answer-zone.incorrect {
+            background: linear-gradient(45deg, #f44336, #e57373) !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .check-btn {
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 15px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            min-width: 160px;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 15px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            min-width: 160px;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 98%;
+                max-width: 98vw;
+                margin: 10px auto;
+            }
+            
+            .images-container {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 20px;
+                padding: 0 5px;
+            }
+            
+            .exercise {
+                margin: 15px;
+                padding: 20px;
+            }
+
+            .header {
+                padding: 20px;
+                font-size: 1.5em;
+            }
+
+            .word-tag {
+                min-width: 120px;
+                padding: 15px 25px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            Hair Description Exercise
+        </div>
+        
+        <!-- Exercise 8 -->
+        <div class="exercise">
+            <div class="exercise-title">8 Write the words / phrases under the correct pictures.</div>
+            
+            <div class="instruction">
+                📱 Instructions: First click on a word, then click on the picture to match them together!
+            </div>
+            
+            <div class="word-bank" id="wordBank1">
+                <div class="word-tag" data-text="short hair" data-exercise="1">short hair</div>
+                <div class="word-tag" data-text="medium-length hair" data-exercise="1">medium-length hair</div>
+                <div class="word-tag" data-text="long hair" data-exercise="1">long hair</div>
+                <div class="word-tag" data-text="bald" data-exercise="1">bald</div>
+            </div>
+
+            <div class="images-container">
+                <div class="image-item" data-exercise="1" data-image="1">
+                    <div class="image-number">1</div>
+                    <div class="image-wrapper">
+                        <img src="1.png" alt="Person 1" onerror="this.parentElement.innerHTML='<div class=placeholder-image>Image: 1.png<br>Blonde woman with long straight hair</div>'">
+                    </div>
+                    <div class="answer-zone" data-exercise="1" data-image="1">Uzun saçlı</div>
+                </div>
+                
+                <div class="image-item" data-exercise="1" data-image="2">
+                    <div class="image-number">2</div>
+                    <div class="image-wrapper">
+                        <img src="2.png" alt="Person 2" onerror="this.parentElement.innerHTML='<div class=placeholder-image>Image: 2.png<br>Blonde woman with short wavy hair</div>'">
+                    </div>
+                    <div class="answer-zone" data-exercise="1" data-image="2">Orta uzunlukta saça sahip</div>
+                </div>
+                
+                <div class="image-item" data-exercise="1" data-image="3">
+                    <div class="image-number">3</div>
+                    <div class="image-wrapper">
+                        <img src="3.png" alt="Person 3" onerror="this.parentElement.innerHTML='<div class=placeholder-image>Image: 3.png<br>Young person with short brown hair</div>'">
+                    </div>
+                    <div class="answer-zone" data-exercise="1" data-image="3">Kısa saçlı</div>
+                </div>
+                
+                <div class="image-item" data-exercise="1" data-image="4">
+                    <div class="image-number">4</div>
+                    <div class="image-wrapper">
+                        <img src="4.png" alt="Person 4" onerror="this.parentElement.innerHTML='<div class=placeholder-image>Image: 4.png<br>Bald man with beard</div>'">
+                    </div>
+                    <div class="answer-zone" data-exercise="1" data-image="4">Kel</div>
+                </div>
+            </div>
+            
+            <button class="check-btn" onclick="checkAnswers(1)">Check Answers</button>
+            <button class="reset-btn" onclick="resetExercise(1)">Reset Exercise 8</button>
+        </div>
+
+        <!-- Exercise 9 -->
+        <div class="exercise">
+            <div class="exercise-title">9 Write the phrases under the correct pictures.</div>
+            
+            <div class="instruction">
+                📱 Instructions: First click on a word, then click on the picture to match them together!
+            </div>
+            
+            <div class="word-bank" id="wordBank2">
+                <div class="word-tag" data-text="dark hair" data-exercise="2">dark hair</div>
+                <div class="word-tag" data-text="fair hair" data-exercise="2">fair hair</div>
+                <div class="word-tag" data-text="red hair" data-exercise="2">red hair</div>
+            </div>
+
+            <div class="images-container">
+                <div class="image-item" data-exercise="2" data-image="1">
+                    <div class="image-number">1</div>
+                    <div class="image-wrapper">
+                        <img src="5.png" alt="Person 5" onerror="this.parentElement.innerHTML='<div class=placeholder-image>Image: 5.png<br>Woman with long dark hair</div>'">
+                    </div>
+                    <div class="answer-zone" data-exercise="2" data-image="1">Koyu saçlı</div>
+                </div>
+                
+                <div class="image-item" data-exercise="2" data-image="2">
+                    <div class="image-number">2</div>
+                    <div class="image-wrapper">
+                        <img src="6.png" alt="Person 6" onerror="this.parentElement.innerHTML='<div class=placeholder-image>Image: 6.png<br>Woman with curly red/orange hair</div>'">
+                    </div>
+                    <div class="answer-zone" data-exercise="2" data-image="2">Kızıl saçlı</div>
+                </div>
+                
+                <div class="image-item" data-exercise="2" data-image="3">
+                    <div class="image-number">3</div>
+                    <div class="image-wrapper">
+                        <img src="7.png" alt="Person 7" onerror="this.parentElement.innerHTML='<div class=placeholder-image>Image: 7.png<br>Woman with blonde/fair hair</div>'">
+                    </div>
+                    <div class="answer-zone" data-exercise="2" data-image="3">Sarı saçlı</div>
+                </div>
+            </div>
+            
+            <button class="check-btn" onclick="checkAnswers(2)">Check Answers</button>
+            <button class="reset-btn" onclick="resetExercise(2)">Reset Exercise 9</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedWord = null;
+        let selectedExercise = null;
+
+        // Define Turkish meanings for reference
+        const turkishMeanings = {
+            1: {
+                1: "Uzun saçlı",
+                2: "Orta uzunlukta saça sahip", 
+                3: "Kısa saçlı",
+                4: "Kel"
+            },
+            2: {
+                1: "Koyu saçlı",
+                2: "Kızıl saçlı", 
+                3: "Sarı saçlı"
+            }
+        };
+
+        // Shuffle function
+        function shuffleWords(exerciseNumber) {
+            const wordBank = document.getElementById(`wordBank${exerciseNumber}`);
+            const words = Array.from(wordBank.children);
+            
+            // Fisher-Yates shuffle algorithm
+            for (let i = words.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [words[i], words[j]] = [words[j], words[i]];
+            }
+            
+            // Clear and re-add shuffled words
+            wordBank.innerHTML = '';
+            words.forEach(word => {
+                // Re-add event listener to each word
+                word.addEventListener('click', handleWordClick);
+                wordBank.appendChild(word);
+            });
+        }
+
+        // Initialize click functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageItems = document.querySelectorAll('.image-item');
+
+            imageItems.forEach(item => {
+                item.addEventListener('click', handleImageClick);
+            });
+
+            // Shuffle words on page load (this will also add event listeners)
+            shuffleWords(1);
+            shuffleWords(2);
+        });
+
+        function handleWordClick(e) {
+            const clickedWord = e.target;
+            const exerciseNumber = clickedWord.dataset.exercise;
+
+            // Don't allow selection of used words
+            if (clickedWord.classList.contains('used')) {
+                return;
+            }
+
+            // Clear previous selections in this exercise
+            document.querySelectorAll(`.word-tag[data-exercise="${exerciseNumber}"]`).forEach(tag => {
+                tag.classList.remove('selected');
+            });
+
+            // Clear image selections
+            document.querySelectorAll(`.image-item[data-exercise="${exerciseNumber}"]`).forEach(item => {
+                item.classList.remove('selected-target', 'clickable');
+            });
+
+            // Select the clicked word
+            clickedWord.classList.add('selected');
+            selectedWord = clickedWord;
+            selectedExercise = exerciseNumber;
+
+            // Make images clickable
+            document.querySelectorAll(`.image-item[data-exercise="${exerciseNumber}"]`).forEach(item => {
+                item.classList.add('clickable');
+            });
+
+            // Add visual feedback
+            setTimeout(() => {
+                document.querySelectorAll(`.image-item[data-exercise="${exerciseNumber}"]`).forEach(item => {
+                    item.classList.add('selected-target');
+                });
+            }, 100);
+        }
+
+        function handleImageClick(e) {
+            const clickedImage = e.currentTarget;
+            const exerciseNumber = clickedImage.dataset.exercise;
+            const imageNumber = clickedImage.dataset.image;
+
+            // Only proceed if a word is selected and it's from the same exercise
+            if (!selectedWord || selectedExercise !== exerciseNumber) {
+                return;
+            }
+
+            // Don't allow clicking if the image doesn't have clickable class
+            if (!clickedImage.classList.contains('clickable')) {
+                return;
+            }
+
+            // Get the answer zone
+            const answerZone = clickedImage.querySelector('.answer-zone');
+            
+            // Place the answer
+            answerZone.textContent = selectedWord.dataset.text;
+            answerZone.classList.add('has-content');
+            answerZone.classList.remove('correct', 'incorrect');
+
+            // Mark the word as used
+            selectedWord.classList.add('used');
+            selectedWord.classList.remove('selected');
+
+            // Clear selections
+            document.querySelectorAll(`.image-item[data-exercise="${exerciseNumber}"]`).forEach(item => {
+                item.classList.remove('selected-target', 'clickable');
+            });
+
+            selectedWord = null;
+            selectedExercise = null;
+
+            // Visual feedback
+            answerZone.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                answerZone.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function checkAnswers(exerciseNumber) {
+            // Correct answers for each exercise
+            const correctAnswers = {
+                1: {
+                    1: "long hair",           // Blonde woman with long hair
+                    2: "medium-length hair",  // Blonde woman with medium-length hair
+                    3: "short hair",          // Young person with short brown hair
+                    4: "bald"                 // Bald man
+                },
+                2: {
+                    1: "dark hair",      // Woman with dark hair
+                    2: "red hair",       // Woman with red/orange hair
+                    3: "fair hair"       // Woman with blonde/fair hair
+                }
+            };
+
+            const answerZones = document.querySelectorAll(`[data-exercise="${exerciseNumber}"].answer-zone`);
+            let allCorrect = true;
+            let answeredCount = 0;
+
+            answerZones.forEach(zone => {
+                const imageNumber = zone.dataset.image;
+                const userAnswer = zone.textContent.trim();
+                const correctAnswer = correctAnswers[exerciseNumber][imageNumber];
+                const turkishMeaning = turkishMeanings[exerciseNumber][imageNumber];
+
+                // Remove previous feedback classes
+                zone.classList.remove('correct', 'incorrect');
+
+                if (userAnswer === turkishMeaning || userAnswer === '') {
+                    // No answer provided (still showing Turkish meaning)
+                    allCorrect = false;
+                } else {
+                    answeredCount++;
+                    if (userAnswer === correctAnswer) {
+                        // Correct answer
+                        zone.classList.add('correct');
+                    } else {
+                        // Incorrect answer
+                        zone.classList.add('incorrect');
+                        allCorrect = false;
+                    }
+                }
+            });
+
+            // Show completion message
+            if (answeredCount === 0) {
+                alert('🤔 Please answer at least one question first!');
+            } else if (allCorrect) {
+                alert('🎉 Excellent! All answers are correct!');
+            } else {
+                alert('👀 Check the red answers and try again!');
+            }
+        }
+
+        function resetExercise(exerciseNumber) {
+            // Clear all answer zones and restore Turkish meanings
+            const answerZones = document.querySelectorAll(`[data-exercise="${exerciseNumber}"].answer-zone`);
+            answerZones.forEach(zone => {
+                const imageNumber = zone.dataset.image;
+                zone.textContent = turkishMeanings[exerciseNumber][imageNumber];
+                zone.classList.remove('has-content', 'correct', 'incorrect');
+            });
+            
+            // Reset word tags
+            const wordTags = document.querySelectorAll(`.word-tag[data-exercise="${exerciseNumber}"]`);
+            wordTags.forEach(tag => {
+                tag.classList.remove('selected', 'used');
+            });
+
+            // Clear image selections
+            const imageItems = document.querySelectorAll(`.image-item[data-exercise="${exerciseNumber}"]`);
+            imageItems.forEach(item => {
+                item.classList.remove('selected-target', 'clickable');
+            });
+            
+            // Clear global selections
+            if (selectedExercise === exerciseNumber) {
+                selectedWord = null;
+                selectedExercise = null;
+            }
+
+            // Shuffle words again after reset
+            shuffleWords(exerciseNumber);
+        }
+
+        // Add touch event support for better mobile experience
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+</body>
+</html>
